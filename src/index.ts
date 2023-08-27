@@ -1,6 +1,7 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import 'dotenv/config'
+import './infrastructure/persistence/mongo/connections'
 
 const app = express()
 
