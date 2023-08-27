@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import BaseAuthController from './baseAuthController'
 import { instructorModel } from 'instructorModel'
 import { studentModel } from 'studentModel'
+import { adminModel } from 'adminModel'
 import { jwt, User } from '../../infrastructure/authentication/jwt'
 
 class AuthController extends BaseAuthController {
@@ -12,19 +13,25 @@ class AuthController extends BaseAuthController {
         ? instructorModel
         : role === 'student'
         ? studentModel
+        : role === 'admin'
+        ? adminModel
         : null
     if (!model) throw new Error('Invalid role')
-    return model
+    return { model, role }
   }
 
   async register(req: Request, res: Response) {
-    const model = this.getModel(req)
+    const { model, role } = this.getModel(req)
     const { name, email, password, specialty, schedule } = req.body
 
     const emailAlreadyExists = await model.findOne({ email })
     if (emailAlreadyExists) {
       throw new Error('Email already exists')
     }
+
+    const isFirstAccount = (await adminModel.countDocuments({})) === 0
+    const isAdmin = role === 'admin'
+    if (isAdmin && isFirstAccount) throw Error('First account must be admin')
 
     const user = await model.create({
       name,
@@ -50,6 +57,8 @@ class AuthController extends BaseAuthController {
       if (isStudent) return isStudent
       const isInstructor = await instructorModel.findOne({ email })
       if (isInstructor) return isInstructor
+      const isAdmin = await adminModel.findOne({ email })
+      if (isAdmin) return isAdmin
       throw new Error('Invalid Credentials')
     }
 

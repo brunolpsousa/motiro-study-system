@@ -69,8 +69,8 @@ InstructorSchema.virtual('lessons', {
 })
 
 InstructorSchema.pre('save', async function () {
-  const { BCRYPT_SALT } = process.env
   if (!this.isModified('password')) return
+  const { BCRYPT_SALT } = process.env
   const salt = await bcrypt.genSalt(parseInt(BCRYPT_SALT as string))
   this.password = await bcrypt.hash(this.password, salt)
 })

@@ -32,7 +32,7 @@ class AuthMiddleware {
     requestUser: { role: string; userId: string },
     resourceUserId: Types.ObjectId
   ) {
-    if (requestUser.role === 'instructor') return
+    if (requestUser.role === 'admin') return
     if (requestUser.userId === resourceUserId.toString()) return
     throw new Error('Not authorized to access this route')
   }
