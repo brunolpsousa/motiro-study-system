@@ -1,10 +1,9 @@
 import { Instructor } from 'domain/entities/instructor'
 import { InstructorRepository } from 'domain/repository/instructorRepository'
 
-import { instructorModel } from './instructorModel'
+import { instructorModel, studentModel } from '.'
 import { StudentRepository } from 'domain/repository/studentRepository'
 import { Student } from 'domain/entities/students'
-import { studentModel } from './studentModel'
 
 export class MongoRepository
   implements InstructorRepository, StudentRepository
@@ -12,12 +11,10 @@ export class MongoRepository
   // Insctuctor methods
 
   async findInstructorById(id: string): Promise<Instructor | null> {
-    const result = await instructorModel.findById(id)
-    return result
+    return await instructorModel.findById(id).select('-password')
   }
   async saveInstructor(instructor: Instructor): Promise<Instructor> {
-    const result = await instructorModel.create(instructor)
-    return result
+    return await instructorModel.create(instructor)
   }
   async updateInstructor(instructor: Instructor): Promise<void> {
     await instructorModel.updateOne({ _id: instructor.id }, instructor)
@@ -29,12 +26,10 @@ export class MongoRepository
   // Student methods
 
   async findStudentById(id: string): Promise<Student | null> {
-    const result = await studentModel.findById(id)
-    return result
+    return await studentModel.findById(id).select('-password')
   }
   async saveStudent(student: Student): Promise<Student> {
-    const result = await studentModel.create(student)
-    return result
+    return await studentModel.create(student)
   }
   async updateStudent(student: Student): Promise<void> {
     await instructorModel.updateOne({ _id: student.id }, student)

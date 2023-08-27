@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { jwt, User } from 'infrastructure/authentication/jwt'
+import { jwt, User } from '@jwt/.'
 import { Types } from 'mongoose'
 
 class AuthMiddleware {
@@ -29,11 +29,11 @@ class AuthMiddleware {
   }
 
   chechUserPermissions(
-    requestUser: { role: string; userId: string },
+    requestUser: { user: { role: string; userId: string } },
     resourceUserId: Types.ObjectId
   ) {
-    if (requestUser.role === 'admin') return
-    if (requestUser.userId === resourceUserId.toString()) return
+    if (requestUser.user.role === 'admin') return
+    if (requestUser.user.userId === resourceUserId.toString()) return
     throw new Error('Unauthorized')
   }
 }

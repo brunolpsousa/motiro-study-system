@@ -1,8 +1,6 @@
 import { Request, Response } from 'express'
-import { instructorModel } from 'instructorModel'
-import { studentModel } from 'studentModel'
-import { adminModel } from 'adminModel'
-import { jwt, User } from '../../infrastructure/authentication/jwt'
+import { adminModel, instructorModel, studentModel } from '@mongo/.'
+import { jwt, User } from '@jwt/.'
 
 const models = [adminModel, instructorModel, studentModel]
 

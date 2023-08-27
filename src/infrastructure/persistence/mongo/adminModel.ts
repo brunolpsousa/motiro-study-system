@@ -1,11 +1,8 @@
 import { Schema, model } from 'mongoose'
+import { UserSchema } from '.'
 import bcrypt from 'bcrypt'
 
-interface Student extends Schema {
-  comparePassword(password: string): boolean
-}
-
-const StudentSchema = new Schema(
+const AdminSchema = new Schema(
   {
     name: {
       type: String,
@@ -27,31 +24,24 @@ const StudentSchema = new Schema(
     role: {
       type: String,
       required: true,
-      enum: ['student'],
-      default: 'student'
+      enum: ['admin'],
+      default: 'admin'
     }
   },
-  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+  { timestamps: true }
 )
 
-StudentSchema.methods.comparePassword = async function (
+AdminSchema.methods.comparePassword = async function (
   canditatePassword: string
 ) {
   return await bcrypt.compare(canditatePassword, this.password)
 }
 
-StudentSchema.virtual('lessons', {
-  ref: 'Lessons',
-  localField: '_id',
-  foreignField: 'student',
-  justOne: false
-})
-
-StudentSchema.pre('save', async function () {
+AdminSchema.pre('save', async function () {
   if (!this.isModified('password')) return
   const { BCRYPT_SALT } = process.env
   const salt = await bcrypt.genSalt(parseInt(BCRYPT_SALT as string))
   this.password = await bcrypt.hash(this.password, salt)
 })
 
-export const studentModel = model<Student>('Student', StudentSchema)
+export const adminModel = model<UserSchema>('Admin', AdminSchema)
