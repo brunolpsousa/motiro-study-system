@@ -22,11 +22,11 @@ class JsonWebToken {
     return jwt.verify(token, JWT_SECRET as string)
   }
 
-  createTokenUser(user: User) {
+  createUserToken(user: User) {
     return { name: user.name, userId: user._id, role: user.role }
   }
 
-  attachCookies({ res, user }: { res: Response; user: object }) {
+  attachCookies({ res, user }: { res: Response; user: User }) {
     const token = this.encode(user)
 
     const oneDay = 1000 * 60 * 60 * 24

@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express'
-import { Types } from 'mongoose'
 import { jwt, User } from 'infrastructure/authentication/jwt'
+import { Types } from 'mongoose'
 
 class AuthMiddleware {
-  authenticateUser(req: Request, _: Response, next: NextFunction) {
+  authUser(req: Request, _: Response, next: NextFunction) {
     const token = req.signedCookies.token
 
     if (!token) {
-      throw new Error('Authentication Invalid')
+      throw new Error('Invalid authentication')
     }
 
     try {
@@ -15,26 +15,26 @@ class AuthMiddleware {
       req.body.user = { userId, name, role }
       next()
     } catch (error) {
-      throw new Error('Authentication Invalid')
+      throw new Error('Invalid authentication')
     }
   }
 
-  authorizePermissions(...roles: string[]) {
+  checkRole(...roles: string[]) {
     return (req: Request, _: Response, next: NextFunction) => {
       if (!roles.includes(req.body.user.role)) {
-        throw new Error('Unauthorized to access this route')
+        throw new Error('Unauthorized')
       }
       next()
     }
   }
 
-  chechPermissions(
+  chechUserPermissions(
     requestUser: { role: string; userId: string },
     resourceUserId: Types.ObjectId
   ) {
     if (requestUser.role === 'admin') return
     if (requestUser.userId === resourceUserId.toString()) return
-    throw new Error('Not authorized to access this route')
+    throw new Error('Unauthorized')
   }
 }
 

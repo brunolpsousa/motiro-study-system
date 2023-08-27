@@ -43,8 +43,8 @@ app.post('/api/v1/login', (req, res) =>
 app.post('/api/v1/logout', (req, res) =>
   Auth.logout(req, res)
 )
-app.get('/api/v1/student/:id', authMiddleware.authenticateUser, (_, res) => res.send('a student'))
-app.get('/api/v1/student', authMiddleware.authenticateUser, authMiddleware.authorizePermissions('instructor'), (_, res) => res.send('all students'))
+app.get('/api/v1/student/:id', authMiddleware.authUser, (_, res) => res.send('a student'))
+app.get('/api/v1/student', authMiddleware.authUser, authMiddleware.checkRole('admin'), (_, res) => res.send('all students'))
 
 app.listen(port, async () => {
   await connectDB(URI)
