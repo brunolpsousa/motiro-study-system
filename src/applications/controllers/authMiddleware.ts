@@ -30,7 +30,7 @@ class AuthMiddleware {
 
   chechUserPermissions(
     requestUser: { user: { role: string; userId: string } },
-    resourceUserId: Types.ObjectId
+    resourceUserId: Types.ObjectId | string
   ) {
     if (requestUser.user.role === 'admin') return
     if (requestUser.user.userId === resourceUserId.toString()) return

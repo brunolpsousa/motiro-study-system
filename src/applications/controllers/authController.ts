@@ -22,6 +22,7 @@ class AuthController {
   async register(req: Request, res: Response) {
     const { model, reqRole } = this.getModel(req)
     const { name, email, password, specialty, schedule } = req.body
+    const token = req.signedCookies.token
 
     const emailAlreadyExists = await model.findOne({ email })
     if (emailAlreadyExists) {
@@ -31,7 +32,6 @@ class AuthController {
     if (reqRole === 'admin') {
       const isFirstAdminAccount = (await adminModel.countDocuments({})) === 0
       if (!isFirstAdminAccount) {
-        const token = req.signedCookies.token
         const { role } = jwt.decode(token) as User
         if (role !== 'admin') throw new Error('Unauthorized')
       }
@@ -44,8 +44,9 @@ class AuthController {
       specialty,
       schedule
     })
+
     const tokenUser = jwt.createUserToken(user as unknown as User)
-    jwt.attachCookies({ res, user: tokenUser })
+    if (!token) jwt.attachCookies({ res, user: tokenUser })
 
     res.status(201).json(tokenUser)
   }

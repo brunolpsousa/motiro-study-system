@@ -31,18 +31,19 @@ import { authMiddleware as aM } from 'applications/controllers'
 import { MongoRepository } from '@mongo/mongoRepository'
 
 const db = new MongoRepository()
-const getInstructor = async (req: Request, res: Response) => {
-  const user = await db.findInstructorById({ _id: req.params.id })
+const getInstructor = async (req: express.Request, res: express.Response) => {
+  const user = await db.findInstructorById(req.params.id)
 
   aM.chechUserPermissions(
     req.body as unknown as { user: { role: string; userId: string } },
-    user._id
+    user?.id as string
   )
   res.status(200).json(user)
 }
 app.post('/api/v1/auth/register', (req, res) => aC.register(req, res))
 app.post('/api/v1/auth/login', (req, res) => aC.login(req, res))
 app.post('/api/v1/auth/logout', (req, res) => aC.logout(req, res))
+
 app.get('/api/v1/student/:id', aM.authUser, (_, res) => res.send('a student'))
 app.get(
   '/api/v1/student',
@@ -50,6 +51,7 @@ app.get(
   aM.checkRole('admin', 'instructor'),
   (_, res) => res.send('all students')
 )
+
 app.get('/api/v1/instructor/:id', aM.authUser, getInstructor)
 app.get('/api/v1/instructor', aM.authUser, (_, res) =>
   res.send('all instructors')
