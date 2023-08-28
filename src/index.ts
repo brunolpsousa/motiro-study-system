@@ -31,6 +31,7 @@ import { authMiddleware as aM } from 'applications/controllers'
 import { MongoRepository } from '@mongo/mongoRepository'
 
 const db = new MongoRepository()
+
 const getInstructor = async (req: express.Request, res: express.Response) => {
   const user = await db.findInstructorById(req.params.id)
 
@@ -40,6 +41,7 @@ const getInstructor = async (req: express.Request, res: express.Response) => {
   )
   res.status(200).json(user)
 }
+
 app.post('/api/v1/auth/register', (req, res) => aC.register(req, res))
 app.post('/api/v1/auth/login', (req, res) => aC.login(req, res))
 app.post('/api/v1/auth/logout', (req, res) => aC.logout(req, res))

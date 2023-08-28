@@ -19,6 +19,16 @@ class AuthController {
     return { model, reqRole }
   }
 
+  private async isFirstAdminAccount() {
+    const documents = await adminModel.countDocuments({})
+    return documents === 0
+  }
+
+  private isAdminRole(token: string) {
+    const { role } = jwt.decode(token) as User
+    return role === 'admin'
+  }
+
   async register(req: Request, res: Response) {
     const { model, reqRole } = this.getModel(req)
     const { name, email, password, specialty, schedule } = req.body
@@ -30,11 +40,8 @@ class AuthController {
     }
 
     if (reqRole === 'admin') {
-      const isFirstAdminAccount = (await adminModel.countDocuments({})) === 0
-      if (!isFirstAdminAccount) {
-        const { role } = jwt.decode(token) as User
-        if (role !== 'admin') throw new Error('Unauthorized')
-      }
+      if (!await this.isFirstAdminAccount() && !this.isAdminRole(token))
+        throw new Error('Unauthorized')
     }
 
     const user = await model.create({
