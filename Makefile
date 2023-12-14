@@ -67,4 +67,4 @@ redeploy:
 %:
 	@:
 
-.PHONY: upd up down stop restart build logs sh prod test coverage rm rmf relaunch
+.PHONY: upd up down stop restart build logs sh prod test coverage rm rmf redeploy
