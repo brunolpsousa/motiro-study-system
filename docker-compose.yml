@@ -3,7 +3,7 @@ version: '3.8'
 services:
   db:
     container_name: mongodb
-    image: mongo:6.0.8
+    image: mongo:7.0.5
     ports:
       - ${DB_PORT}:${DB_PORT}
     networks:
@@ -25,62 +25,62 @@ services:
     command: mongod --port ${DB_PORT} --logpath /data/db/logs
     restart: always
 
-  mongo-express:
-    container_name: mongo-express
-    image: mongo-express
-    ports:
-      - ${MONGO_EXPRESS_PORT}:${MONGO_EXPRESS_PORT}
-    networks:
-      - backend
-    volumes:
-      - type: bind
-        source: data/me
-        target: /data/me
-        bind:
-          create_host_path: true
-    environment:
-      ME_CONFIG_MONGODB_PORT: ${DB_PORT}
-      ME_CONFIG_MONGODB_SERVER: ${DB_HOST}
-      VCAP_APP_PORT: ${MONGO_EXPRESS_PORT}
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
+  # mongo-express:
+  #   container_name: mongo-express
+  #   image: mongo-express
+  #   ports:
+  #     - ${MONGO_EXPRESS_PORT}:${MONGO_EXPRESS_PORT}
+  #   networks:
+  #     - backend
+  #   volumes:
+  #     - type: bind
+  #       source: data/me
+  #       target: /data/me
+  #       bind:
+  #         create_host_path: true
+  #   environment:
+  #     ME_CONFIG_MONGODB_PORT: ${DB_PORT}
+  #     ME_CONFIG_MONGODB_SERVER: ${DB_HOST}
+  #     VCAP_APP_PORT: ${MONGO_EXPRESS_PORT}
+  #   restart: unless-stopped
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
 
-  api:
-    container_name: api
-    working_dir: /app
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    networks:
-      - backend
-    volumes:
-      - ./src:/app/src
-      - ./test:/app/test
-      - ./public:/app/public
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: dev
-    user: node:node
-    ports:
-      - ${PORT}:${PORT}
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: '10m'
-        max-file: '5'
-    command: npm run dev
-    restart: always
-    depends_on:
-      db:
-        condition: service_healthy
+  # api:
+  #   container_name: api
+  #   working_dir: /app
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   networks:
+  #     - backend
+  #   volumes:
+  #     - ./src:/app/src
+  #     - ./test:/app/test
+  #     - ./public:/app/public
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     NODE_ENV: dev
+  #   user: node:node
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #   logging:
+  #     driver: 'json-file'
+  #     options:
+  #       max-size: '10m'
+  #       max-file: '5'
+  #   command: npm run dev
+  #   restart: always
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
 
 networks:
-  frontend:
-    name: frontend
-    driver: bridge
+  # frontend:
+  #   name: frontend
+  #   driver: bridge
   backend:
     name: backend
     driver: bridge

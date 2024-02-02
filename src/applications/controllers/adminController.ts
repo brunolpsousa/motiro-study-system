@@ -1,6 +1,8 @@
+import { Controller, Get } from '@nestjs/common'
 import { AdminUseCase } from '@usecases'
 import { Request, Response } from 'express'
 
+@Controller('a')
 export class AdminController {
   constructor(private useCase: AdminUseCase) {}
   async create(req: Request, res: Response) {
@@ -21,9 +23,10 @@ export class AdminController {
     return res.status(200).json(result)
   }
 
+  @Get()
   async listAll(_: Request, res: Response) {
-    const result = await this.useCase.listAll()
-    return res.status(200).json(result)
+    return await this.useCase.listAll()
+    // return res.status(200).json(result)
   }
 
   async update(req: Request, res: Response) {

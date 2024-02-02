@@ -1,9 +1,12 @@
 import { Admin } from '@entities'
 import { NotFoundError } from '@errors'
 import { AdminRepository } from '@repositories'
+import { Injectable } from '@nestjs/common'
+import { MongoAdminRepository } from '@mongo'
 
+@Injectable()
 export class AdminUseCase {
-  constructor(private adminRepository: AdminRepository) {}
+  constructor(private adminRepository: MongoAdminRepository) {}
 
   async create(req: Admin): Promise<Admin> {
     const admin = new Admin(req)
@@ -18,8 +21,9 @@ export class AdminUseCase {
   }
 
   async listAll(): Promise<Admin[]> {
-    const response = await this.adminRepository.findAll()
-    return response
+    return await this.adminRepository.findAll()
+    // const response = 'a' as unknown as Admin[]
+    // return response
   }
 
   async update(req: Admin): Promise<void> {

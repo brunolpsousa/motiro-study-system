@@ -3,6 +3,7 @@ import { AdminRepository } from '@repositories'
 import { CastError, ConflictError } from '@errors'
 import { Document, isValidObjectId, ObjectId } from 'mongoose'
 import { adminModel, instructorModel, studentModel } from '@models'
+import { Injectable } from '@nestjs/common'
 
 interface AdminDocument extends Document {
   _id: ObjectId
@@ -12,6 +13,7 @@ interface AdminDocument extends Document {
   role: string
 }
 
+@Injectable()
 export class MongoAdminRepository implements AdminRepository {
   async findById(id: string): Promise<Admin | null> {
     if (!isValidObjectId(id)) {

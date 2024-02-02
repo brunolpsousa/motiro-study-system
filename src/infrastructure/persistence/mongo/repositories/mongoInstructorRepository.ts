@@ -86,7 +86,7 @@ export class MongoInstructorRepository implements InstructorRepository {
     await instructorModel.updateOne(
       { _id: id, schedule: { $elemMatch: { _id: schedule._id } } },
       { $set: { 'schedule.$': schedule } },
-      { new: true, runValidators: true }
+      { runValidators: true }
     )
   }
   async delete(id: string): Promise<void> {

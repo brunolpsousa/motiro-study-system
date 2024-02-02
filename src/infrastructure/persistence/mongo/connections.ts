@@ -1,10 +1,8 @@
-import mongoose from 'mongoose'
+import { connect } from 'mongoose'
 
-mongoose.set('strictQuery', true)
+// const url = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
+const url = `mongodb://localhost:${process.env.DB_PORT}/${process.env.DB_NAME}`
 
-const url = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
-
-mongoose
-  .connect(url)
-  .then(() => console.log('database is working'))
-  .catch(() => console.log('database is not working'))
+export default async () => {
+  return connect(url)
+}
