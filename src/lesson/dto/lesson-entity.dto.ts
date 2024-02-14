@@ -11,10 +11,13 @@ export class Lesson {
     this.dateId = props.dateId
     this.files = props.files
 
-    if (id) {
-      this.id = id
-    }
+    if (id) this.id = id
   }
 }
 
-export type LessonFile = { id?: string, name: string; path: string; uploadedBy: string }
+export type LessonFile = {
+  id?: string
+  name: string
+  path: string
+  uploadedBy: string
+}

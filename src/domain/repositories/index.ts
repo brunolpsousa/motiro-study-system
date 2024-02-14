@@ -1,7 +1,7 @@
-import { LessonRepository } from './lessonRepository'
-import { InstructorRepository } from './instructorRepository'
-import { StudentRepository } from './studentRepository'
-import { AdminRepository } from './adminRepository'
+import { LessonRepository } from '../../lesson/dto/lesson-repository.dto'
+import { InstructorRepository } from '../../instructor/dto/instructor-repository.dto'
+import { StudentRepository } from '../../student/dto/student-repository.dto'
+import { AdminRepository } from '../../admin/dto/admin-repository.dto'
 export {
   AdminRepository,
   StudentRepository,

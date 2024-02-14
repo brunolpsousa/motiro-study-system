@@ -9,7 +9,8 @@ import { jwt, User } from '@jwt'
 import { AdminUseCase, InstructorUseCase, StudentUseCase } from '@usecases'
 import { Request } from 'express'
 
-type userUseCase = AdminUseCase | InstructorUseCase | StudentUseCase
+type userUseCase = InstructorUseCase | StudentUseCase
+// type userUseCase = AdminUseCase | InstructorUseCase | StudentUseCase
 
 export class AuthUseCase {
   constructor(...args: userUseCase[]) {

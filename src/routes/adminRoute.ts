@@ -1,4 +1,4 @@
-import { AdminUseCase } from '@usecases'
+/* import { AdminUseCase } from '@usecases'
 import { AdminController } from '@controllers'
 import { authMiddleware, verifyToken } from '@middlewares'
 import { MongoAdminRepository } from '@mongo'
@@ -21,4 +21,4 @@ router
   .patch((req, res) => adminController.update(req, res))
   .delete((req, res) => adminController.delete(req, res))
 
-export default router
+export default router */

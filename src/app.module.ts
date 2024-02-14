@@ -1,19 +1,11 @@
 import { Module } from '@nestjs/common'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
-import { AdminUseCase } from '@usecases'
-import { AdminController } from '@controllers'
-import { AdminRepository } from '@repositories'
-import { MongoAdminRepository } from '@mongo'
+import { AdminModule } from 'admin'
+import { LessonModule } from 'lesson'
+import { MongoModule } from 'mongo'
 
 @Module({
-  imports: [],
-  controllers: [AppController, AdminController],
-  providers: [
-    AppService,
-    AdminUseCase,
-    AdminRepository as any,
-    MongoAdminRepository
-  ]
+  imports: [AdminModule, LessonModule, MongoModule],
+  controllers: [],
+  providers: []
 })
 export class AppModule {}

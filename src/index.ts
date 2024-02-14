@@ -15,7 +15,7 @@ const appE = express()
 appE.use(cookieParser(COOKIE_SECRET))
 appE.use(express.json())
 appE.use(fileUpload())
-appE.use(routes)
+// appE.use(routes)
 appE.use(notFoundMiddleware)
 appE.use(errorMiddleware)
 

@@ -1,7 +1,10 @@
-import { Admin } from './admin'
-import { Instructor, Schedule } from './instructor'
-import { Student } from './students'
-import { Lesson, LessonFile } from './lessons'
+import { Admin } from '../../admin/dto/admin-entity.dto'
+import {
+  Instructor,
+  Schedule
+} from '../../instructor/dto/instructor-entity.dto'
+import { Student } from '../../student/dto/student-entity.dto'
+import { Lesson, LessonFile } from '../../lesson/dto/lesson-entity.dto'
 import {
   ApiError,
   BadRequestError,

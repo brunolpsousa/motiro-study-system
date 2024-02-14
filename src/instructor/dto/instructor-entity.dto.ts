@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose"
+import { ObjectId } from 'mongoose'
 
 export class Instructor {
   public readonly id?: string
