@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common'
-import { LessonUseCase } from '@usecases'
-import { LessonController } from '@controllers'
-import { LessonRepository } from '@repositories'
-import { MongoLessonRepository } from '@mongo'
+import { LessonService } from './lesson.service'
+import { LessonController } from './lesson.controller'
 
 @Module({
   imports: [],
   controllers: [LessonController],
-  providers: [LessonUseCase, LessonRepository as any, MongoLessonRepository]
+  providers: [LessonService]
 })
 export class LessonModule {}

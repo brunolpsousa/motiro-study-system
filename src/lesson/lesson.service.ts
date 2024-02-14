@@ -1,22 +1,19 @@
-import {
-  BadRequestError,
-  Instructor,
-  Lesson,
-  LessonFile,
-  NotFoundError,
-  ConflictError,
-  Schedule,
-  Student
-} from '@entities'
-import { MongoLessonRepository } from '@mongo'
-import { InstructorUseCase, StudentUseCase } from '@usecases'
+import { Lesson, LessonFile } from './dto'
+import { Schedule, User } from 'user/dto'
 import { UploadedFile } from 'express-fileupload'
 import { ObjectId } from 'mongoose'
 import path from 'path'
+import { UserService } from 'user'
+import { MongoService } from 'mongo'
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException
+} from '@nestjs/common'
 
 interface LessonProps {
-  instructor: Instructor
-  student: Student
+  instructor: User
+  student: User
   date: Schedule
 }
 
@@ -30,15 +27,14 @@ export interface LessonResponse {
 
 export class LessonService {
   constructor(
-    private mongoRepo: MongoLessonRepository,
-    private instructorUseCase: InstructorUseCase,
-    private studentUseCase: StudentUseCase
+    private mongoService: MongoService,
+    private userService: UserService
   ) {}
 
   private async getProps(lesson: Lesson): Promise<LessonProps> {
-    const instructor = await this.instructorUseCase.listOne(lesson.instructorId)
-    const student = await this.studentUseCase.listOne(lesson.studentId)
-    const date = instructor.schedule.find(
+    const instructor = await this.userService.listOne(lesson.instructorId)
+    const student = await this.userService.listOne(lesson.studentId)
+    const date = instructor.schedule?.find(
       s => s._id?.toString() === lesson.dateId.toString()
     )
     return { instructor, student, date: date as Schedule }
@@ -61,10 +57,11 @@ export class LessonService {
         Object.values(allowedMimeTypes).includes(textFile.mimetype)
       )
     )
-      throw new BadRequestError('Not a text file')
+      throw new BadRequestException('Not a text file')
 
     const maxSize = 1024 * 1024 * 5
-    if (textFile.size > maxSize) throw new BadRequestError('File exceeds 5MB')
+    if (textFile.size > maxSize)
+      throw new BadRequestException('File exceeds 5MB')
 
     const fileName = new Date().getTime() + '-' + textFile.name
     const filePath = path.join(
@@ -84,16 +81,16 @@ export class LessonService {
     const lesson = new Lesson(req)
     const { instructor, student, date } = await this.getProps(lesson)
     if (!instructor || !student || !date)
-      throw new BadRequestError('Mismatch in provided IDs')
+      throw new BadRequestException('Mismatch in provided IDs')
 
     if (date.busy)
-      throw new ConflictError(
+      throw new ConflictException(
         'A lesson is already booked for the requested schedule'
       )
 
-    const createLesson = await this.mongoRepo.save(lesson)
+    const createLesson = await this.mongoService.saveLesson(lesson)
     date.busy = true
-    await this.instructorUseCase.updateSchedule(lesson.instructorId, date)
+    await this.userService.updateSchedule(lesson.instructorId, date)
 
     const response: LessonResponse = {
       id: createLesson.id!,
@@ -110,22 +107,22 @@ export class LessonService {
     userId: string
     textFile: UploadedFile | UploadedFile[]
   }): Promise<void> {
-    if (!req.textFile) throw new BadRequestError('No file was uploaded')
+    if (!req.textFile) throw new BadRequestException('No file was uploaded')
 
     if (Object.keys(req.textFile)[0] === '0') {
       for (const doc of Object.values(req.textFile)) {
         const file = await this.handleFile(doc, req.userId)
-        await this.mongoRepo.uploadFile(req.lessonId, file)
+        await this.mongoService.uploadFile(req.lessonId, file)
       }
       return
     }
     const file = await this.handleFile(req.textFile as UploadedFile, req.userId)
-    await this.mongoRepo.uploadFile(req.lessonId, file)
+    await this.mongoService.uploadFile(req.lessonId, file)
   }
 
   async listOne(id: string): Promise<LessonResponse> {
-    const lesson = await this.mongoRepo.findById(id)
-    if (!lesson) throw new NotFoundError(`Lesson not found`)
+    const lesson = await this.mongoService.findLessonById(id)
+    if (!lesson) throw new NotFoundException(`Lesson not found`)
     const { instructor, student, date } = await this.getProps(lesson)
 
     const files = []
@@ -150,7 +147,7 @@ export class LessonService {
   }
 
   async listAll(): Promise<LessonResponse[]> {
-    const lessons = await this.mongoRepo.findAll()
+    const lessons = await this.mongoService.findAllLessons()
     const response: LessonResponse[] = []
     for (const lesson of lessons) {
       const { instructor, student, date } = await this.getProps(lesson)
@@ -180,15 +177,15 @@ export class LessonService {
   }
 
   async delete(id: string): Promise<void> {
-    const lesson = await this.mongoRepo.findById(id)
+    const lesson = await this.mongoService.findLessonById(id)
 
-    if (!lesson) throw new NotFoundError('Lesson not found')
+    if (!lesson) throw new NotFoundException('Lesson not found')
 
     const { date } = await this.getProps(lesson)
     if (date) {
       date.busy = false
-      await this.instructorUseCase.updateSchedule(lesson.instructorId, date)
+      await this.userService.updateSchedule(lesson.instructorId, date)
     }
-    await this.mongoRepo.delete(id)
+    await this.mongoService.delete(id)
   }
 }

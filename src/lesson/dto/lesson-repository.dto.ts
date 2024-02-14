@@ -1,4 +1,4 @@
-import { Lesson } from '@entities'
+import { Lesson } from './lesson.dto'
 
 export abstract class LessonRepository {
   abstract findById(id: string): Promise<Lesson | null>

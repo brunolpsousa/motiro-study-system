@@ -1,4 +1,4 @@
-import { TokenExpiredError, UnauthorizedError } from 'domain/entities/error'
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common'
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 
@@ -10,9 +10,9 @@ export const verifyToken = (req: Request, _: Response, next: NextFunction) => {
   jwt.verify(token, JWT_SECRET as string, (err: any) => {
     if (err) {
       if (err.name === 'TokenExpiredError') {
-        throw new TokenExpiredError('Session expired')
+        throw new ForbiddenException('Session expired')
       } else {
-        throw new UnauthorizedError('Invalid authentication')
+        throw new UnauthorizedException('Invalid authentication')
       }
     } else {
       next()

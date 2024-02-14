@@ -1,5 +1,5 @@
 import { AdminRepository } from '@repositories'
-import { Admin } from '@entities'
+import { Admin } from 'user/dto/user-entities.dto'
 
 const users: Admin[] = [
   {

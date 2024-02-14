@@ -1,4 +1,4 @@
-import { Lesson } from '@entities'
+import { Lesson } from 'user/dto/user-entities.dto'
 import { InstructorUseCase, LessonUseCase, StudentUseCase } from '@usecases'
 import { UploadedFile } from 'express-fileupload'
 

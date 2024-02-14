@@ -4,7 +4,7 @@ import { Request } from 'express'
 import { AdminRepoTest } from './adminRepoTest'
 import { InstructorRepoTest } from './instructorRepoTest'
 import { StudentRepoTest } from './studentRepoTest'
-import { Admin, Instructor, Student } from '@entities'
+import { Admin, Instructor, Student } from 'user/dto/user-entities.dto'
 import {
   AuthUseCase,
   AdminUseCase,
@@ -155,7 +155,9 @@ describe('AuthUseCase', () => {
 
         const newAdmin = async () =>
           await authUseCase.login({ body: admObj } as Request)
-        expect(() => newAdmin()).rejects.toThrow('The email or password is invalid')
+        expect(() => newAdmin()).rejects.toThrow(
+          'The email or password is invalid'
+        )
       })
 
       it('should login', async () => {
@@ -185,7 +187,9 @@ describe('AuthUseCase', () => {
           await authUseCase.login({
             body: { email: admin[0].email, password: 'wrong' }
           } as Request)
-        expect(() => login()).rejects.toThrow('The email or password is invalid')
+        expect(() => login()).rejects.toThrow(
+          'The email or password is invalid'
+        )
       })
     })
   })
@@ -224,7 +228,9 @@ describe('AuthUseCase', () => {
         }
         const newInstructor = async () =>
           await authUseCase.login({ body: insObj } as Request)
-        expect(() => newInstructor()).rejects.toThrow('The email or password is invalid')
+        expect(() => newInstructor()).rejects.toThrow(
+          'The email or password is invalid'
+        )
       })
 
       it('should login', async () => {
@@ -254,7 +260,9 @@ describe('AuthUseCase', () => {
           await authUseCase.login({
             body: { email: instructor[0].email, password: 'wrong' }
           } as Request)
-        expect(() => login()).rejects.toThrow('The email or password is invalid')
+        expect(() => login()).rejects.toThrow(
+          'The email or password is invalid'
+        )
       })
     })
   })
@@ -294,7 +302,9 @@ describe('AuthUseCase', () => {
 
         const newStudent = async () =>
           await authUseCase.login({ body: stuObj } as Request)
-        expect(() => newStudent()).rejects.toThrow('The email or password is invalid')
+        expect(() => newStudent()).rejects.toThrow(
+          'The email or password is invalid'
+        )
       })
 
       it('should login', async () => {
@@ -322,7 +332,9 @@ describe('AuthUseCase', () => {
           await authUseCase.login({
             body: { email: student[0].email, password: 'wrong' }
           } as Request)
-        expect(() => login()).rejects.toThrow('The email or password is invalid')
+        expect(() => login()).rejects.toThrow(
+          'The email or password is invalid'
+        )
       })
     })
   })

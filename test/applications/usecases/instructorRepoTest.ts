@@ -1,5 +1,5 @@
 import { InstructorRepository } from '@repositories'
-import { Instructor, Schedule } from '@entities'
+import { Instructor, Schedule } from 'user/dto/user-entities.dto'
 import { Types } from 'mongoose'
 
 export const dateId = new Types.ObjectId()

@@ -1,5 +1,5 @@
 import { StudentRepository } from '@repositories'
-import { Student } from '@entities'
+import { Student } from 'user/dto/user-entities.dto'
 
 const users: Student[] = [
   {

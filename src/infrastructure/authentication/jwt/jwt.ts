@@ -1,10 +1,8 @@
 import jwt from 'jsonwebtoken'
 import { Response } from 'express'
-import { Admin, Student, Instructor } from 'domain/entities'
+import { User } from 'user/dto'
 
 const { JWT_SECRET, JWT_LIFETIME } = process.env
-
-export type User = Admin | Instructor | Student
 
 class JsonWebToken {
   encode(payload: object) {
@@ -35,4 +33,5 @@ class JsonWebToken {
   }
 }
 
-export default new JsonWebToken()
+const jwtInstance = new JsonWebToken()
+export { jwtInstance as jwt }

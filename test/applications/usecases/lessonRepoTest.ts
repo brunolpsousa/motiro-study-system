@@ -1,5 +1,5 @@
 import { LessonRepository } from '@repositories'
-import { Lesson, LessonFile } from '@entities'
+import { Lesson, LessonFile } from 'user/dto/user-entities.dto'
 import { dateId, dateId2 } from './instructorRepoTest'
 
 const lessons: Lesson[] = [

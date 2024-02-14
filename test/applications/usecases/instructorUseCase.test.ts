@@ -1,6 +1,6 @@
 import { InstructorRepoTest } from './instructorRepoTest'
 import { InstructorUseCase } from '@usecases'
-import { Instructor } from '@entities'
+import { Instructor } from 'user/dto/user-entities.dto'
 
 const instructorUseCase = new InstructorUseCase(new InstructorRepoTest())
 let instructorRepo: InstructorRepoTest
