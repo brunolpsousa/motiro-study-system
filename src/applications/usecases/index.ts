@@ -1,13 +1,13 @@
 import { AuthUseCase } from './authUseCase'
-import { AdminService as AdminUseCase } from './adminUseCase'
+import { UserService as AdminUseCase } from './adminUseCase'
 import { InstructorUseCase } from './instructorUseCase'
 import { StudentUseCase } from './studentUseCase'
-import { LessonUseCase, LessonResponse } from './lessonUseCase'
+import { LessonService, LessonResponse } from './lessonUseCase'
 export {
   AuthUseCase,
   AdminUseCase,
   InstructorUseCase,
   StudentUseCase,
-  LessonUseCase,
+  LessonService as LessonUseCase,
   LessonResponse
 }

@@ -1,94 +1,91 @@
+import { Lesson } from './dto'
 import {
-  BadRequestError,
-  ForbiddenError,
-  NotFoundError,
-  UnauthorizedError
-} from '@entities'
-import { Controller } from '@nestjs/common'
-import { LessonResponse, LessonUseCase } from '@usecases'
-import { Request, Response } from 'express'
+  BadRequestException,
+  Body,
+  Controller,
+  ForbiddenException,
+  NotFoundException,
+  Param,
+  Req,
+  UnauthorizedException
+} from '@nestjs/common'
+import { LessonResponse, LessonService } from './lesson.service'
 import { UploadedFile } from 'express-fileupload'
 
 @Controller('lesson')
 export class LessonController {
-  constructor(private useCase: LessonUseCase) {}
-  async create(req: Request, res: Response) {
-    const { instructorId, studentId, dateId } = req.body
+  constructor(private useCase: LessonService) {}
+  async create(@Body() dto: Lesson) {
+    const { instructorId, studentId, dateId } = dto
 
-    const result = await this.useCase.create({
+    return await this.useCase.create({
       instructorId,
       studentId,
       dateId,
       files: []
     })
-
-    return res.status(201).json(result)
   }
 
-  async uploadFile(req: Request, res: Response) {
-    const id = req.params?.id
-    if (!id) throw new BadRequestError('Invalid ID')
+  async uploadFile(
+    @Param('id') id: string,
+    @Body() dto: any,
+    @Req() req: Express.Request
+  ) {
+    if (!id) throw new BadRequestException('Invalid ID')
 
-    const userId = req.body.user?.id
-    if (!userId) throw new UnauthorizedError('Invalid authentication')
+    const userId = dto.user?.id
+    if (!userId) throw new UnauthorizedException('Invalid authentication')
 
     const lesson = await this.useCase.listOne(id)
-    if (!lesson) throw new NotFoundError('Lesson not found')
+    if (!lesson) throw new NotFoundException('Lesson not found')
 
     const isInstructor = userId === lesson.instructor.id?.toString()
     const isStudent = userId === lesson.student.id?.toString()
-    const isAdmin = req.body.user?.role === 'admin'
+    const isAdmin = dto.user?.role === 'admin'
     if (!isInstructor && !isStudent && !isAdmin)
-      throw new ForbiddenError('Access denied')
+      throw new ForbiddenException('Access denied')
 
     if (!req.files || !req.files?.document)
-      throw new BadRequestError('No file was uploaded')
+      throw new BadRequestException('No file was uploaded')
 
     const textFile: UploadedFile | UploadedFile[] = req.files.document
 
     await this.useCase.uploadFile({
       lessonId: id,
-      userId: req.body.user?.id,
+      userId: dto.user?.id,
       textFile: textFile
     })
-
-    return res.status(200).send()
   }
 
-  async listOne(req: Request, res: Response) {
-    const id = req.params?.id
+  async listOne(@Param('id') id: string, @Body() dto: any) {
     const result = await this.useCase.listOne(id)
 
-    if (req.body.user?.role !== 'admin') {
-      const checkInstructor =
-        result.instructor.id.toString() === req.body.user?.id
-      const checkStudent = result.student.id?.toString() === req.body.user?.id
+    if (dto.user?.role !== 'admin') {
+      const checkInstructor = result.instructor.id.toString() === dto.user?.id
+      const checkStudent = result.student.id?.toString() === dto.user?.id
       if (!(checkStudent || checkInstructor))
-        throw new ForbiddenError('Access denied')
+        throw new ForbiddenException('Access denied')
     }
 
-    return res.status(200).json(result)
+    return result
   }
 
-  async listAll(req: Request, res: Response) {
+  async listAll(@Body() dto: any) {
     const lessons = await this.useCase.listAll()
     let result: LessonResponse[] = []
 
-    if (req.body.user?.role !== 'admin') {
+    if (dto.user?.role !== 'admin') {
       for (const lesson of lessons) {
-        const checkInstructor =
-          lesson.instructor.id.toString() === req.body.user?.id
-        const checkStudent = lesson.student.id.toString() === req.body.user?.id
+        const checkInstructor = lesson.instructor.id.toString() === dto.user?.id
+        const checkStudent = lesson.student.id.toString() === dto.user?.id
         if (checkStudent || checkInstructor) result.push(lesson)
       }
     } else result = lessons
 
-    return res.status(200).json(result)
+    return result
   }
 
-  async delete(req: Request, res: Response) {
-    const id = req.params?.id
-    await this.useCase.delete(id)
-    return res.status(200).send()
+  async delete(@Param('id') id: string) {
+    return await this.useCase.delete(id)
   }
 }

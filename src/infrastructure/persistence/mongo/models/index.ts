@@ -9,3 +9,4 @@ export interface UserSchema extends Schema {
 }
 
 export { adminModel, instructorModel, studentModel, lessonModel }
+export * from './userModel'

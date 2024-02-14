@@ -6,7 +6,7 @@ export type Schedule = {
   busy: boolean
 }
 
-export class Admin {
+export class User {
   public readonly id?: string
   public name: string
   public email: string
@@ -15,7 +15,7 @@ export class Admin {
   public schedule?: Schedule[]
   public role?: string
 
-  constructor(props: Omit<Admin, 'id'>, id?: string) {
+  constructor(props: Omit<User, 'id'>, id?: string) {
     this.name = props.name
     this.email = props.email
     this.password = props.password

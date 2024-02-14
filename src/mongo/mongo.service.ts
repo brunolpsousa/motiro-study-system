@@ -1,10 +1,11 @@
-import { Admin } from '@entities'
-import { CastError, ConflictError } from '@errors'
+import { User } from 'user/dto'
+import { CastError } from '@errors'
 import { Document, isValidObjectId, ObjectId } from 'mongoose'
-import { adminModel, instructorModel, studentModel } from '@models'
+import { userModel } from '@models'
 import { Injectable } from '@nestjs/common'
+import { Schedule } from 'user/dto'
 
-interface AdminDocument extends Document {
+interface UserDocument extends Document {
   _id: ObjectId
   id: string
   name: string
@@ -14,37 +15,37 @@ interface AdminDocument extends Document {
 
 @Injectable()
 export class MongoService {
-  async findById(id: string): Promise<Admin | null> {
+  async findById(id: string): Promise<User | null> {
     if (!isValidObjectId(id)) throw new CastError('Invalid ID')
 
-    const result: AdminDocument = await adminModel
+    const result: UserDocument = await userModel
       .findById(id)
       .select('-password')
-    if (result) return new Admin(result, id)
+    if (result) return new User(result, id)
     return null
   }
 
-  async findAll(): Promise<Admin[]> {
-    const result: AdminDocument[] = await adminModel.find().select('-password')
+  async findAll(): Promise<User[]> {
+    const result: UserDocument[] = await userModel.find().select('-password')
 
-    const admins: Admin[] = []
+    const users: User[] = []
 
     for (const item of result) {
-      const admin: Admin = {
+      const user: User = {
         id: item._id.toString(),
         name: item.name,
         email: item.email,
         role: item.role
       }
 
-      admins.push(admin)
+      users.push(user)
     }
-    return admins
+    return users
   }
-  async save(admin: Admin): Promise<Admin> {
-    const result: AdminDocument = (await adminModel.create(admin)).toObject()
+  async save(dto: User): Promise<User> {
+    const result: UserDocument = (await userModel.create(dto)).toObject()
 
-    return new Admin(
+    return new User(
       {
         name: result.name,
         email: result.email,
@@ -53,18 +54,10 @@ export class MongoService {
       result.id
     )
   }
-  async update(admin: Admin): Promise<void> {
-    const { password, ...user } = admin
-    if (user.email) {
-      const instructorExists = await instructorModel.findOne({
-        email: user.email
-      })
-      const studentExists = await studentModel.findOne({ email: user.email })
-      if (instructorExists || studentExists)
-        throw new ConflictError('Provided email is already registered')
-    }
-    await adminModel
-      .findOneAndUpdate({ _id: admin.id }, user, { runValidators: true })
+  async update(dto: User): Promise<void> {
+    const { password, ...user } = dto
+    await userModel
+      .findOneAndUpdate({ _id: user.id }, user, { runValidators: true })
       .then(user => {
         if (user && password) {
           user.markModified('password')
@@ -73,22 +66,29 @@ export class MongoService {
         }
       })
   }
+  async updateSchedule(id: string, schedule: Schedule): Promise<void> {
+    await userModel.updateOne(
+      { _id: id, schedule: { $elemMatch: { _id: schedule._id } } },
+      { $set: { 'schedule.$': schedule } },
+      { runValidators: true }
+    )
+  }
   async delete(id: string): Promise<void> {
-    await adminModel.deleteOne().where({ _id: id })
+    await userModel.deleteOne().where({ _id: id })
   }
 
   async count(): Promise<number> {
-    return await adminModel.countDocuments()
+    return await userModel.countDocuments()
   }
 
   async comparePassword(id: string, password: string): Promise<boolean> {
-    const user = await adminModel.findById(id)
+    const user = await userModel.findById(id)
     if (!user) return false
     return await user?.comparePassword(password)
   }
 
   whoAmI(): string {
-    const user = new Admin({ name: '', email: '' })
-    return user.role || 'admin'
+    const user = new User({ name: '', email: '' })
+    return user.role || 'user'
   }
 }

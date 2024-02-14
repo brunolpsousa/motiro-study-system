@@ -28,7 +28,7 @@ export interface LessonResponse {
   files: LessonFile[]
 }
 
-export class LessonUseCase {
+export class LessonService {
   constructor(
     private mongoRepo: MongoLessonRepository,
     private instructorUseCase: InstructorUseCase,

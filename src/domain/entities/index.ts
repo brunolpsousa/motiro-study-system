@@ -1,4 +1,4 @@
-import { Admin } from '../../admin/dto/admin-entity.dto'
+import { User } from '../../user/dto/user.dto'
 import {
   Instructor,
   Schedule
@@ -24,7 +24,7 @@ export enum ENTITIES {
 }
 
 export {
-  Admin,
+  User as Admin,
   Instructor,
   Schedule,
   Student,

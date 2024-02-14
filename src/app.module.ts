@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
-import { AdminModule } from 'admin'
+import { UserModule } from 'user'
 import { LessonModule } from 'lesson'
 import { MongoModule } from 'mongo'
 
 @Module({
-  imports: [AdminModule, LessonModule, MongoModule],
+  imports: [UserModule, LessonModule, MongoModule],
   controllers: [],
   providers: []
 })
