@@ -5,12 +5,14 @@ import {
   Get,
   Param,
   Patch,
-  Post
+  Post,
+  UseGuards
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { User } from './dto'
-// import { authMiddleware } from 'applications/middlewares/authMiddleware'
+import { JwtGuard } from 'auth/guard'
 
+@UseGuards(JwtGuard)
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
@@ -22,7 +24,6 @@ export class UserController {
 
   @Get(':id')
   async listOne(@Param('id') userId: string, @Body() bodyId: any) {
-    // authMiddleware.checkUserPermissions(bodyId, userId)
     return await this.userService.listOne(userId)
   }
 
@@ -33,13 +34,11 @@ export class UserController {
 
   @Patch(':id')
   async update(@Param('id') userId: string, @Body() dto: User) {
-    // authMiddleware.checkUserPermissions(dto as any, userId)
     return await this.userService.update(userId, dto)
   }
 
   @Delete(':id')
   async delete(@Param('id') userId: string, @Body() body: any) {
-    // authMiddleware.checkUserPermissions(body, userId)
     return await this.userService.delete(userId)
   }
 }
