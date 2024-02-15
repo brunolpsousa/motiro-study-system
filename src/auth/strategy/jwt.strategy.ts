@@ -11,13 +11,27 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     private mongo: MongoService
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromBodyField('user'),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        JwtStrategy.extractJWT,
+        ExtractJwt.fromAuthHeaderAsBearerToken()
+      ]),
       secretOrKey: config.get('JWT_SECRET')
     })
   }
 
-  async validate(payload: { sub: string; email: string }) {
-    const user = await this.mongo.findById(payload.sub)
+  private static extractJWT(req: any): string | null {
+    if (
+      req.signedCookies &&
+      'token' in req.signedCookies &&
+      req.signedCookies.token.length > 0
+    ) {
+      return req.signedCookies.token
+    }
+    return null
+  }
+
+  async validate(payload: { id: string; email: string }) {
+    const user = await this.mongo.findById(payload.id)
     delete user?.password
     return user
   }

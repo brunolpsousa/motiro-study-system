@@ -23,7 +23,7 @@ export class UserController {
   }
 
   @Get(':id')
-  async listOne(@Param('id') userId: string, @Body() bodyId: any) {
+  async listOne(@Param('id') userId: string) {
     return await this.userService.listOne(userId)
   }
 

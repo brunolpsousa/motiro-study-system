@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { jwt } from '@jwt'
+import { jwt } from 'auth/strategy'
 import { UserService } from 'user'
 import { Request } from 'express'
 import { User, ENTITIES } from 'user/dto'
@@ -36,9 +36,7 @@ export class AuthService {
 
   private async getUserByEmail(email: string): Promise<User | undefined> {
     const users = await this.userService.listAll()
-    if (users) {
-      for (const user of users) if (user.email === email) return user
-    }
+    if (users) for (const user of users) if (user.email === email) return user
   }
 
   async register(req: Request) {

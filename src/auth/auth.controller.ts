@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Req, Res } from '@nestjs/common'
-import { jwt } from '@jwt'
+import { jwt } from './strategy'
 import { AuthService } from './auth.service'
 import { Request, Response } from 'express'
 
@@ -12,21 +12,23 @@ export class AuthController {
     const tokenUser = await this.authService.register(req)
     const token = req.signedCookies?.token
     if (!token) jwt.attachCookies({ res, user: tokenUser })
-    res.status(201).json(tokenUser)
+    return res.send(tokenUser)
   }
 
   @Post('login')
   async login(@Req() req: Request, @Res() res: Response) {
     const userToken = await this.authService.login(req)
     jwt.attachCookies({ res, user: userToken })
-    return userToken
+    return res.send(userToken)
   }
 
   @Get('logout')
-  logout(@Res() res: Response) {
-    res.cookie('token', 'logout', {
-      httpOnly: true,
-      expires: new Date()
-    })
+  async logout(@Res() res: Response) {
+    res
+      .cookie('token', 'logout', {
+        httpOnly: true,
+        expires: new Date()
+      })
+      .send()
   }
 }
